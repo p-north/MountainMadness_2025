@@ -63,7 +63,7 @@ function Grid({difficulty,callback}: { difficulty: string; callback: Function;})
     };
   
     return (
-      <div className="absolute flex justify-center items-center min-h-screen p-5 left-[50%] translate-x-[-50%]">
+      <div className="flex justify-center items-center min-h-screen p-5">
         <table className="border-separate border-spacing-4 border border-purple-500">
           <tbody>
             {Array.from({ length: rows }).map((_, rowIndex) => (
@@ -76,7 +76,7 @@ function Grid({difficulty,callback}: { difficulty: string; callback: Function;})
                   return (
                     <td
                       key={colIndex}
-                      className={`w-20 h-20 border border-purple-800 text-white text-center font-bold text-lg transition-all duration-300 ease-in-out cursor-pointer 
+                      className={`w-20 h-20 aspect-square border border-purple-800 text-white text-center font-bold text-lg transition-all duration-300 ease-in-out cursor-pointer 
                                  ${
                                    isClicked
                                      ? isSelected

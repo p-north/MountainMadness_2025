@@ -13,11 +13,9 @@ const Board = () => {
 
 
   return (
-
     <>
-    <Score userScore={score} Mode={mode}/>
-    <Grid difficulty={level} callback={setScore} />
-
+      <Score userScore={score} Mode={mode}/>
+      <Grid difficulty={level} callback={setScore} />
     </>
   )
 }
