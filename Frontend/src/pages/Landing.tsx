@@ -5,11 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Brain, Code2, Crown, Swords } from "lucide-react";
 import { Link } from "react-router";
+import BgParticles from '@/components/landing/BgParticles';
 
 const Landing = () => {
     return (
-        <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-950 text-white">
-          <div className="container mx-auto px-4 py-8">
+        <div className="relative min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-950 text-white">
+            <BgParticles />
+          <div className="relative z-10 container mx-auto px-4 py-8">
+
             {/* Header */}
             <div className="text-center mb-12">
               <div className="flex items-center justify-center gap-2 mb-4">
@@ -103,18 +106,18 @@ const Landing = () => {
                   <TabsContent value="leetcode">
                     <LeaderboardTable
                       data={[
-                        { rank: 1, name: "Alex Chen", score: 2500, solved: 15 },
-                        { rank: 2, name: "Sarah Kim", score: 2350, solved: 14 },
-                        { rank: 3, name: "Mike Johnson", score: 2200, solved: 13 },
+                        { rank: 1, name: "Alex Chen", score: 2500 },
+                        { rank: 2, name: "Sarah Kim", score: 2350 },
+                        { rank: 3, name: "Mike Johnson", score: 2200 },
                       ]}
                     />
                   </TabsContent>
                   <TabsContent value="behavior">
                     <LeaderboardTable
                       data={[
-                        { rank: 1, name: "Emma Davis", score: 1800, solved: 12 },
-                        { rank: 2, name: "James Wilson", score: 1650, solved: 11 },
-                        { rank: 3, name: "Lisa Brown", score: 1500, solved: 10 },
+                        { rank: 1, name: "Emma Davis", score: 1800 },
+                        { rank: 2, name: "James Wilson", score: 1650 },
+                        { rank: 3, name: "Lisa Brown", score: 1500 },
                       ]}
                     />
                   </TabsContent>
