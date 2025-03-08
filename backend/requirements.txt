@@ -3,3 +3,6 @@ uvicorn
 python-dotenv 
 pydantic
 mysql-connector-python
+openai
+elevenlabs
+os
