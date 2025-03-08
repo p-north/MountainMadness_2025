@@ -1,20 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
+const audio = new Audio ("/suspense-horror.mp3");
 function Noise({speed}: {speed:number;}) {
-
+    const [soundPlaying, setPlaySound] = useState(false);
     
-    useEffect(()=>{
-        var audio = new Audio ("/assets/suspense-horror.mp3");
-        audio.playbackRate = speed ;
-        audio.loop = true;
-        audio.play();
+    const handleBtnClick = () => {
+        setPlaySound(!soundPlaying);
+        console.log(soundPlaying)
+        if (soundPlaying){
+            audio.playbackRate = speed ;
+            audio.loop = true;
+            audio.play();
+        } else {
+            audio.pause();
+        }
     }
-        
-        
-        
-        ,[]);
 
-    return null;
+
+    // return null;
+    return(<>
+    <button onClick={handleBtnClick}>Toggle Sound</button>
+    </>)
+
 }
 
 export default Noise;

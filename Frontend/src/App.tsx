@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -9,6 +9,12 @@ import Noise from './components/background-noise.tsx'
 function App() {
   const [count, setCount] = useState(0)
 
+  // useEffect(()=>{
+  //     var audio = new Audio ("/suspense-horror.mp3");
+  //     // audio.playbackRate = speed ;
+  //     // audio.loop = true;
+  //     audio.play();
+  // },[]);
   
   return (
     <>
