@@ -7,13 +7,13 @@ function Grid({difficulty}: { difficulty: string;}) {
     let rows = 0;
     let cols = 0;
   
-    if (difficulty === "Easy") {
+    if (difficulty === "easy") {
       rows = 4;
       cols = 4;
-    } else if (difficulty === "Medium") {
+    } else if (difficulty === "medium") {
       rows = 6;
       cols = 6;
-    } else if (difficulty === "Hard") {
+    } else if (difficulty === "hard") {
       rows = 8;
       cols = 8;
     }
@@ -53,7 +53,7 @@ function Grid({difficulty}: { difficulty: string;}) {
     };
   
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-900 p-5">
+      <div className="absolute flex justify-center items-center min-h-screen p-5 left-[50%] translate-x-[-50%]">
         <table className="border-separate border-spacing-4 border border-purple-500">
           <tbody>
             {Array.from({ length: rows }).map((_, rowIndex) => (
