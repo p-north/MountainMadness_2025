@@ -11,13 +11,10 @@ const Board = () => {
   const [_, mode, level] = location.pathname.split('/');
   const[score, setScore] = useState(0);
 
-
   return (
-
     <>
-    <Score userScore={score} Mode={mode}/>
-    <Grid difficulty={level} callback={setScore} />
-
+      <Score userScore={score} Mode={mode}/>
+      <Grid difficulty={level} callback={setScore} mode={mode} />
     </>
   )
 }
