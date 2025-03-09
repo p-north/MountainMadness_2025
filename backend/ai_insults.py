@@ -35,8 +35,6 @@ async def generateAndUploadAudio():
 
     # Initialize OpenAI client with your API key
     client = OpenAI(api_key=YOUR_API_KEY, base_url="https://api.perplexity.ai")
-    print(YOUR_API_KEY)
-    print(client.api_key)
 
     # Chat completion request
     response = client.chat.completions.create(
@@ -45,8 +43,7 @@ async def generateAndUploadAudio():
     )
     
     # Extract text from OpenAI response
-    response_text = response['choices'][0]['text']  # Adjusted to match expected response structure
-    print(response_text)
+    response_text = response.choices[0].message.content  # Adjusted to match expected response structure
 
     # Convert the text to speech using ElevenLabs
     audio = clientEleven.text_to_speech.convert(

@@ -51,29 +51,48 @@ app = FastAPI(lifespan=lifespan)
 def root():
     return {"message": "Hello World"}
 
-@app.post("/upload-audio")
+@app.post("/audio")
 async def upload_audio():
     fileUrl = await generateAndUploadAudio()
+    # Add the URL to the database
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+    
+    cursor = connection.cursor()
+    
+    # insert the URL into database
+    try:
+        query = "INSERT INTO audio (audio_url) VALUES(%s)"
+        cursor.execute(query, (fileUrl,))
+        entry_id = cursor.lastrowid
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=str("Error uploading to database: ", e))
+    finally:
+        cursor.close()
+        connection.close()
     return {"message": "File generated successfully", "file_url": fileUrl, "status":201}
     
     
 
+
 # Upload to S3, then retrieve from S3
-@app.get("/get-audio")
-async def getAudio(fileName: str = Body(...)):
-    fileUrl = get_S3_Url(fileName)
-    return {"message": "File generated successfully", "file_url": fileUrl, "status":200}
+# IGNORE THIS ENDPOINT FOR NOW
+# @app.get("/get-audio")
+# async def getAudio(fileName: str = Body(...)):
+#     fileUrl = get_S3_Url(fileName)
+#     return {"message": "File generated successfully", "file_url": fileUrl, "status":200}
     
     
     
 
-@app.get("/questions")
-async def get_questions(request: Request):
-    body = await request.json()
-    difficulty_level = body.get("difficulty")
-    return {"question": generate_q(difficulty_level)}
+@app.get("/questions/{dificultyLevel}")
+async def get_questions(difficultyLevel: str):
+    return {"question": generate_q(difficultyLevel)}
 
-@app.post("/leaderboard/", response_model=Leaderboard)
+@app.post("/leaderboard", response_model=Leaderboard)
 def create_leaderboard_entry(entry: Leaderboard):
     connection = get_db_connection()
     if not connection:
@@ -134,11 +153,9 @@ def get_leaderboard():
         cursor.close()
         connection.close()
 
-@app.get("/response")
+@app.post("/response")
 async def get_response(request: Request):
     body = await request.json()
     answer = body.get("Answer")
     question = body.get("Question")
-    print(answer)
-    print(question)
     return {"AI_answer": responsd_to_answer(question, answer)}

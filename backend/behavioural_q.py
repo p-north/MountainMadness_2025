@@ -43,8 +43,6 @@ def generate_q(difficulty):
     return response_text
 
 def responsd_to_answer(question, answer):
-    print(question)
-    print(answer)
     messages = [
         {
             "role": "system",
