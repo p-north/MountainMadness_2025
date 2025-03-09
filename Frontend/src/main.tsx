@@ -5,8 +5,10 @@ import './index.css';
 import Board from './pages/Board.tsx';
 import Landing from './pages/Landing.tsx';
 import RootLayout from './pages/RootLayout.tsx';
+import { ScoreContextProvider } from './util/score-context.tsx';
+import Score from './components/score-board.tsx';
 
-
+// const ScoreContext = createContext<number>(0); 
 const router = createBrowserRouter([
   {
     path: "/",
@@ -55,6 +57,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <ScoreContextProvider>
+      <RouterProvider router={router} />
+    </ScoreContextProvider>
   </StrictMode>,
 )

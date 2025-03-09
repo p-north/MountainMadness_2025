@@ -7,7 +7,7 @@ function Score({userScore, Mode}: { userScore: number; Mode: string;}) {
     
     return(
     <>
-    <div className={`w-40 h-10 rounded-lg ${colour} flex justify-center items-center absolute top-10 right-10`}>
+    <div className={`w-40 h-10 rounded-lg ${colour} flex justify-center items-center absolute top-7 right-7`}>
         <p>User Score: {userScore}</p>
     </div>
     </>
