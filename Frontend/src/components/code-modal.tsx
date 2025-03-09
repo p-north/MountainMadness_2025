@@ -183,7 +183,7 @@ sys.stdout = original_stdout
         handleModals((prev: any) => ({
           ...prev,
           quiz: false,
-          gameover: { description: data?.AI_answer }
+          gameover: { description: data?.AI_answer.feedback }
         }));
       }
     }
