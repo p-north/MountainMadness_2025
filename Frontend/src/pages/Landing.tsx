@@ -13,9 +13,9 @@ const Landing = () => {
       <div className="text-center mb-12">
         <div className="flex items-center justify-center gap-2 mb-4">
           <Swords className="h-12 w-12 text-primary animate-pulse" />
-          <h1 className="text-4xl font-bold">Click or Regret</h1>
+          <h1 className="text-4xl font-bold">Click and Regret</h1>
         </div>
-        <p className="text-lg text-muted-foreground">Click or Regret</p>
+        <p className="text-lg text-muted-foreground">Click AND Regret is an interactive Minesweeper-style game where users predict the game mode and navigate through tiles.</p>
       </div>
 
       {/* Game Modes */}
