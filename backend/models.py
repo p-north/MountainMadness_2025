@@ -15,4 +15,5 @@ class Leaderboard(BaseModel):
     
     class Config:
         from_attributes = True
+
     

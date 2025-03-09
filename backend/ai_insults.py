@@ -22,7 +22,7 @@ messages = [
         "role": "user",
         "content": (
             "Roast the user who has begun answering a difficult programming question ("
-            "keep the response under three sentences)"
+            "keep the response under two sentences)"
         ),
     },
 ]
