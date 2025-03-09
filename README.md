@@ -1,3 +1,5 @@
+<img width="295" alt="image" src="https://github.com/user-attachments/assets/073799c5-3540-4054-ab1c-306df2da42ef" />
+
 # Click AND Regret 🚀
 
 Click AND Regret is an interactive Minesweeper-style game where users predict the game mode (easy, medium, hard) and navigate through tiles. The objective is to land on green tiles while avoiding red tiles. If a user lands on a red tile, they must answer either a behavioral or LeetCode question, with the added twist of random jump scares!
