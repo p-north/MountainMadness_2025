@@ -1,5 +1,6 @@
 import Grid from "@/components/grid";
 import Score from "@/components/score-board";
+import Noise from "@/components/background-noise";
 import { useLocation } from "react-router"
 import { useState } from "react";
 
@@ -15,8 +16,10 @@ const Board = () => {
   return (
 
     <>
+    <Noise speed={((score+1)*(score+1)/10)+1} />
     <Score userScore={score} Mode={mode}/>
     <Grid difficulty={level} callback={setScore} />
+    
 
     </>
   )
