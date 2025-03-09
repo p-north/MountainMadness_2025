@@ -54,6 +54,7 @@ function Grid({
   const [currentQuestion, setCurrentQuestion] = useState<any>(null);
   const [name, setName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [quizAudio, setQuizAudio] = useState('');
 
   useEffect(() => {
     const totalCells = rows * cols;
@@ -123,6 +124,12 @@ function Grid({
                   difficulty,
                   code: `def solution():\n  # Your code here. Do not change the function name.`,
                 });
+              });
+
+            fetch(`${import.meta.env.VITE_SERVER_URL}/get-audio`)
+              .then(response => response.json() )
+              .then(data => {
+                setQuizAudio(data.fileUrl);
               });
           }
   
@@ -238,7 +245,7 @@ function Grid({
         <Dialog open={isModalOpen.quiz} onOpenChange={quizDialogHandler}>
           <DialogTrigger asChild />
           {mode === 'leet-code' ? (
-            <CodeQuiz question={currentQuestion} handleModals={setIsModalOpen} />
+            <CodeQuiz question={currentQuestion} handleModals={setIsModalOpen} audio={quizAudio} />
           ) : (
             <BehaviorQuiz question={currentQuestion} handleModals={setIsModalOpen} />
           )}
