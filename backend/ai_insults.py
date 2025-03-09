@@ -7,28 +7,27 @@ from datetime import datetime
 import mysql.connector
 from S3_upload import upload_S3
 
-YOUR_API_KEY = "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"
-ELEVENLABS_API_KEY = "sk_20a4e12df9eedb168742fcf5387fda80394016740a088060"
-
 load_dotenv()
 
-async def gennerateAndUploadAudio():
-    messages = [
-        {
-            "role": "system",
-            "content": (
-                "You are a mean artificial intelligence that will insult the user who is"
-                "attempting to answer a difficult programming question"
-            ),
-        },
-        {   
-            "role": "user",
-            "content": (
-                "Roast the user who has begun answering a difficult programming question ("
-                "keep the response under three sentences)"
-            ),
-        },
-    ]
+YOUR_API_KEY = os.getenv("API_KEY_PERPLEXITY")
+ELEVENLABS_API_KEY = os.getenv("API_KEY_ELEVENLABS")
+
+messages = [
+    {
+        "role": "system",
+        "content": (
+            "You are a mean artificial intelligence that will insult the user who is"
+            "attempting to answer a difficult programming question"
+        ),
+    },
+    {   
+        "role": "user",
+        "content": (
+            "Roast the user who has begun answering a difficult programming question ("
+            "keep the response under two sentences)"
+        ),
+    },
+]
 
     clientEleven = ElevenLabs(
     api_key=ELEVENLABS_API_KEY,
