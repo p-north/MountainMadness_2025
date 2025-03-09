@@ -2,7 +2,10 @@
 import { useState, useEffect } from "react";
 
 
-function Grid({difficulty}: { difficulty: string;}) {
+// var local_score = 1;
+function Grid({difficulty,callback}: { difficulty: string; callback: Function;}) {
+  
+  
 
     let rows = 0;
     let cols = 0;
@@ -45,9 +48,16 @@ function Grid({difficulty}: { difficulty: string;}) {
   
       if (!clickedCells.has(cellKey)) {
         setClickedCells((prev) => new Set(prev).add(cellKey)); // Mark cell as clicked
+
+
   
         if (selectedCells.has(cellKey)) {
           alert(`🎉 You found a selected cell at Row ${rowIndex + 1}, Col ${colIndex + 1}!`);
+        }
+
+        else{
+          callback((prevScore: number) => prevScore + 1);
+          // local_score+=1;
         }
       }
     };
