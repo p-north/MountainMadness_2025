@@ -1,8 +1,4 @@
 function Score({userScore, Mode}: { userScore: number; Mode: string;}) {
-
-
-    
-
     const colour = Mode === "leet-code" ? "bg-blue-400" : "bg-purple-400";
     
     return(
@@ -11,11 +7,7 @@ function Score({userScore, Mode}: { userScore: number; Mode: string;}) {
         <p>User Score: {userScore}</p>
     </div>
     </>
-    )
-    
-    ;
-    
-
+    );
 }
 
 export default Score;
