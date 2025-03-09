@@ -1,18 +1,19 @@
 function Score({userScore, Mode}: { userScore: number; Mode: string;}) {
 
 
-    var colour;
+    
 
-    if(Mode == "leet-code"){
-        colour = "purple"; 
-    }
-
-    else{
-        colour = "blue";
-    }
-    return(<div style={{backgroundColor:colour}} className="w-40 h-40 rounded-lg">
+    const colour = Mode === "leet-code" ? "bg-blue-400" : "bg-purple-400";
+    
+    return(
+    <>
+    <div className={`w-40 h-10 rounded-lg ${colour} flex justify-center items-center absolute top-10 right-10`}>
         <p>User Score: {userScore}</p>
-    </div>);
+    </div>
+    </>
+    )
+    
+    ;
     
 
 }

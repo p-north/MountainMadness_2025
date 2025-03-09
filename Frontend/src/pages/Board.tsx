@@ -2,7 +2,6 @@ import Grid from "@/components/grid";
 import Score from "@/components/score-board";
 import { useLocation } from "react-router"
 import { useState } from "react";
-import { useEffect } from "react";
 
 
 
