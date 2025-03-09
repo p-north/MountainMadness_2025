@@ -10,6 +10,8 @@ import { CodeQuiz } from './code-modal'; // Ensure correct import path
 import { BehaviorQuiz } from './behavior-modal';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { useScore } from '@/util/score-context';
+import { redirect } from 'react-router';
 
 
 
@@ -23,6 +25,8 @@ function Grid({
   mode: string;
   callback: Function;
 }) {
+  const {score, setScore} = useScore(); 
+  
   let rows = 0;
   let cols = 0;
 
@@ -46,7 +50,7 @@ function Grid({
   });
   const [currentQuestion, setCurrentQuestion] = useState<any>(null);
   const [name, setName] = useState('');
-  const [question, setQuestion] = useState("");
+
   useEffect(() => {
     const totalCells = rows * cols;
     const numSelectedCells = Math.floor(totalCells * 0.25);
@@ -71,8 +75,6 @@ function Grid({
 
       if (selectedCells.has(cellKey)) {
         // Open modal with question data
-        console.log(mode);
-        
         if(mode === "behavior"){
           console.log("Hello");
           fetch(`${import.meta.env.VITE_SERVER_URL}/questions/behaviour/${difficulty}`)
@@ -91,7 +93,6 @@ function Grid({
         }
 
         else {
-
           console.log('data fetching..');
          
             fetch(`${import.meta.env.VITE_SERVER_URL}/questions/leetcode/${difficulty}`)
@@ -103,7 +104,8 @@ function Grid({
               setCurrentQuestion({
                 title: question.title,
                 description: question.description,
-                code: `function solution(${question.functionSignature}) { \n  // Your code here. Do not change the function name.\n }`
+                difficulty,
+                code: `def solution():\n  # Your code here. Do not change the function name.`
               });
             } );
 
@@ -114,7 +116,6 @@ function Grid({
           quiz: true,
         }));
         }
-      } else {
         callback((prevScore: number) => prevScore + 1);
       }
   };
@@ -137,19 +138,43 @@ function Grid({
 
     else if (mode === "leet-code"){
       //Send name to leet-code leader board
+      fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/leetcode`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: name,
+            score: score
+        })
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error("Error:", error));
 
-
-
+      redirect('/');
       return;
     }
 
-    else if(mode === "behavior"){
+    else {
        //Send name to behavior leader board
 
-
-
-
-       return;
+       fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/${mode === 'behavior' ? 'behaviour' : 'leetcode'}'`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: name,
+            score: score,
+        })
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error("Error:", error));
+        
+      redirect('/');
+      return;
     }
   }
 
@@ -242,6 +267,7 @@ function Grid({
           <DialogContent className="max-w-3xl" hideX={true}>
             <DialogHeader>
               <DialogTitle>Gameover</DialogTitle>
+              <p className="text-center">Your score: {score}</p>
             </DialogHeader>
             <form onSubmit={submitHandler} className="space-y-2">
               <Input placeholder='Enter your name' value={name} onChange={(e) => {

@@ -1,23 +1,36 @@
 import { Button } from '@/components/ui/button';
-import { Trash } from "lucide-react";
+import { Trash, Play } from "lucide-react";
 import {
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { javascript } from '@codemirror/lang-javascript';
+import { python } from '@codemirror/lang-python';
 import { oneDark } from '@codemirror/theme-one-dark';
 import CodeMirror from '@uiw/react-codemirror';
-import { Play } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Loader } from './ui/loader';
+
+const loadPyodide = async () => {
+  const pyodideModule = await import("https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.mjs");
+  return await pyodideModule.loadPyodide({
+    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/",
+  });
+};
+
+
+
+
+
+
 
 interface QuizQuestion {
   id: number;
   title: string;
   description: string;
   code: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
+  difficulty: 'easy' | 'medium' | 'hard';
 }
 
 interface CodeQuizProps {
@@ -25,10 +38,35 @@ interface CodeQuizProps {
 }
 
 export function CodeQuiz({ question }: CodeQuizProps) {
-  const [code, setCode] = useState(question?.code);
+
+  fetch(`${import.meta.env.VITE_SERVER_URL}/audio`,{
+    method: "POST",
+    headers:{
+      "Content-Type" : "application/json"
+    }
+    })
+    .then(response => response.json() )
+    .then(data => (console.log(data)));
+
+  const [code, setCode] = useState(question?.code || '');
   const [output, setOutput] = useState<string>('');
   const [isRunning, setIsRunning] = useState(false);
-  const [testCases, setTestCases] = useState<string[][]>([[""]]); // Initial test case
+  const [testCases, setTestCases] = useState<string[][]>([]); // Initial test case
+  const [pyodide, setPyodide] = useState<any>(null);
+
+  useEffect(() => {
+    setCode(question?.code);
+  }, [question?.code])
+
+  useEffect(() => {
+    async function initializePyodide() {
+      console.log('loading py');
+      const py = await loadPyodide();
+      console.log('loaded', py);
+      setPyodide(py);
+    }
+    initializePyodide();
+  }, []);
 
   const handleTestCaseChange = (index: number, paramIndex: number, value: string) => {
     const updatedTestCases = [...testCases];
@@ -60,59 +98,64 @@ export function CodeQuiz({ question }: CodeQuizProps) {
     }
   };
 
-  const runCode = () => {
+  const runCode = async () => {
+    if (!pyodide) {
+      setOutput("Pyodide is still loading. Please wait...");
+      return;
+    }
+
     setIsRunning(true);
     setOutput('Running...\n');
 
     try {
-      let consoleOutput = '';
-      const captureConsoleLog = (...args: any[]) => {
-        consoleOutput += args.map(arg => JSON.stringify(arg, null, 2)).join(' ') + '\n';
-      };
-
-      // Override console.log to capture logs
-      const originalConsoleLog = console.log;
-      console.log = captureConsoleLog;
-
-      // Extract function from user code
+      // Define the function and capture output
       const wrappedCode = `
-        (function() {
-          ${code}
-          if (typeof solution !== 'function') {
-            throw new Error("No function named 'solution' found. Make sure you define 'function solution(...)'.");
-          }
-          return solution;
-        })();
+import sys
+from io import StringIO
+
+original_stdout = sys.stdout
+sys.stdout = StringIO()
+
+${code}
+
+if 'solution' not in globals():
+    raise NameError("No function named 'solution' found. Define 'def solution(...):'")
+
+output = sys.stdout.getvalue()
+sys.stdout = original_stdout
       `;
 
-      const result = eval(wrappedCode);
+      await pyodide.runPythonAsync(wrappedCode);
 
-      // Restore console.log
-      console.log = originalConsoleLog;
-
-      if (typeof result !== 'function') {
-        throw new Error("Extracted result is not a function.");
+      const functionExists = await pyodide.runPythonAsync("'solution' in globals()");
+      if (!functionExists) {
+        throw new Error("No function named 'solution' found.");
       }
+
+      const consoleOutput = await pyodide.runPythonAsync("output");
 
       setOutput(prev => prev + 'Function defined successfully!\n' + consoleOutput);
 
       // Convert inputs and execute function
-      testCases.forEach((testCase, i) => {
-        try {
-          const parsedTestCase = testCase.map(value => {
-            try {
-              return JSON.parse(value); // Convert JSON input
-            } catch {
-              return value; // Otherwise, treat as string
-            }
-          });
+      for (let i = 0; i < testCases.length; i++) {
+        const testCase = testCases[i];
+        const parsedTestCase = testCase.map(value => {
+          try {
+            return JSON.parse(value); // Convert JSON input
+          } catch {
+            return value; // Otherwise, treat as string
+          }
+        });
 
-          const resultValue = result(...parsedTestCase);
-          setOutput(prev => prev + `Test case ${i + 1}: ${JSON.stringify(resultValue)}\n`);
+        const pythonTestCase = `solution(*${JSON.stringify(parsedTestCase)})`;
+
+        try {
+          const resultValue = await pyodide.runPythonAsync(pythonTestCase);
+          setOutput(prev => prev + `Test case ${i + 1}: ${resultValue}\n`);
         } catch (error) {
           setOutput(prev => prev + `Test case ${i + 1} failed: ${error}\n`);
         }
-      });
+      }
     } catch (error) {
       setOutput(prev => prev + `Error: ${error}\n`);
     } finally {
@@ -126,9 +169,9 @@ export function CodeQuiz({ question }: CodeQuizProps) {
         question ? <>
         <DialogHeader>
         <DialogTitle>{question.title}</DialogTitle>
-        <span className={`inline-block text-sm px-2 py-1 rounded ${
-          question.difficulty === 'Easy' ? 'bg-green-100 text-green-700' :
-          question.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+        <span className={`capitalize inline-block text-sm px-2 py-1 rounded ${
+          question.difficulty === 'easy' ? 'bg-green-100 text-green-700' :
+          question.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-700' :
           'bg-red-100 text-red-700'
         }`}>
           {question.difficulty}
@@ -140,7 +183,7 @@ export function CodeQuiz({ question }: CodeQuizProps) {
 
         <div className="flex flex-col overflow-hidden">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">JavaScript</span>
+            <span className="text-sm text-gray-600">Python</span>
             <Button
               onClick={runCode}
               disabled={isRunning}
@@ -156,7 +199,7 @@ export function CodeQuiz({ question }: CodeQuizProps) {
               value={code}
               height="100%"
               theme={oneDark}
-              extensions={[javascript({ jsx: true })]}
+              extensions={[python()]}
               onChange={(value) => setCode(value)}
               className="h-full overflow-auto"
               basicSetup={{
@@ -210,7 +253,7 @@ export function CodeQuiz({ question }: CodeQuizProps) {
       </div>
 
           </> : <DialogHeader>
-        <DialogTitle>Loading...</DialogTitle>
+          <DialogTitle className="w-full h-full flex justify-center items-center"><Loader /></DialogTitle>
       </DialogHeader>
       }
       
