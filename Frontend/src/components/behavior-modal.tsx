@@ -6,11 +6,13 @@ import { Loader } from "./ui/loader";
 export function BehaviorQuiz({ question, handleModals }: { question: { title: string; description: string }, handleModals: (prev?: any) => void }) {
   const [answer, setAnswer] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const handleSubmit = async () => {
     setIsSubmitting(true);
     const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/response`, {
       method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         Question: question.description, 
         Answer: answer
@@ -18,10 +20,12 @@ export function BehaviorQuiz({ question, handleModals }: { question: { title: st
     })
 
     const data = await res.json();
-    const judge = data?.AI_answer?.split('/10') || [];
-    if (judge.length) {
-      const score = parseInt(judge[0].slice(judge[0].length - 2, judge[0].length));
-      if (!isNaN(score) && score > 5) {
+    console.log("API Response:", data);
+
+    const judge = data?.AI_answer?.score;
+    console.log(judge)
+    if (judge) {
+      if (!isNaN(judge) && judge > 5) {
         handleModals((prev: any) => ({
           ...prev,
           quiz: false
