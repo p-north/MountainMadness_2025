@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request, HTTPException, Body
 from database import get_db_connection
 from models import Behaviour_LD, Audio, Leetcode_LD
 from typing import List
-from behavioural_q import generate_q, responsd_to_answer
+from behavioural_q import generate_q, respond_to_answer, generate_lc
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 # Create table if it doesn't exist
@@ -97,9 +97,13 @@ async def upload_audio():
     
     
 
-@app.get("/questions/{dificultyLevel}")
+@app.get("/questions/behaviour/{difficultyLevel}")
 async def get_questions(difficultyLevel: str):
     return {"question": generate_q(difficultyLevel)}
+
+@app.get("/questions/leetcode/{difficultyLevel}")
+async def get_question_lc(difficultyLevel: str):
+    return {"question": generate_lc(difficultyLevel)}
 
 # Inserts noew entries into behaviour
 @app.post("/leaderboard/behaviour", response_model=Behaviour_LD)
@@ -228,4 +232,4 @@ async def get_response(request: Request):
     body = await request.json()
     answer = body.get("Answer")
     question = body.get("Question")
-    return {"AI_answer": responsd_to_answer(question, answer)}
+    return {"AI_answer": respond_to_answer(question, answer)}
