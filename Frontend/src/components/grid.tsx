@@ -11,6 +11,9 @@ import { BehaviorQuiz } from './behavior-modal';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
+
+
+
 function Grid({
   difficulty,
   mode,
@@ -43,7 +46,7 @@ function Grid({
   });
   const [currentQuestion, setCurrentQuestion] = useState<any>(null);
   const [name, setName] = useState('');
-
+  const [question, setQuestion] = useState("");
   useEffect(() => {
     const totalCells = rows * cols;
     const numSelectedCells = Math.floor(totalCells * 0.25);
@@ -68,22 +71,52 @@ function Grid({
 
       if (selectedCells.has(cellKey)) {
         // Open modal with question data
-        setCurrentQuestion({
-          id: 1,
-          title: 'Two Sum',
-          description:
-            'Given an array of numbers, return indices of the two numbers that add up to a target.',
-          code: `function solution(nums, target) {\n  // Your code here. Do not change the function name.\n}`,
-          difficulty: difficulty.charAt(0).toUpperCase() + difficulty.slice(1),
-        });
+        console.log(mode);
+        
+        if(mode === "behavior"){
+          console.log("Hello");
+          fetch(`${import.meta.env.VITE_SERVER_URL}/questions/behaviour/${difficulty}`)
+          .then((response) => response.json())
+          .then((data) => {
+            setCurrentQuestion({
+              title: 'Behavioral Questions',
+              description: data.question,
+            });
+          });
+
+          setIsModalOpen((prev) => ({
+            ...prev,
+            quiz: true
+          }));
+        }
+
+        else {
+
+          console.log('data fetching..');
+         
+            fetch(`${import.meta.env.VITE_SERVER_URL}/questions/leetcode/${difficulty}`)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+             
+                const question = data.question;
+              setCurrentQuestion({
+                title: question.title,
+                description: question.description,
+                code: `function solution(${question.functionSignature}) { \n  // Your code here. Do not change the function name.\n }`
+              });
+            } );
+
+          }
+
         setIsModalOpen((prev) => ({
           ...prev,
           quiz: true,
         }));
+        }
       } else {
         callback((prevScore: number) => prevScore + 1);
       }
-    }
   };
 
   const quizDialogHandler = (open: boolean) => {
@@ -154,7 +187,7 @@ function Grid({
         })}
       </div>
 
-      {isModalOpen.quiz && currentQuestion && (
+      {isModalOpen.quiz && (
         <Dialog open={isModalOpen.quiz} onOpenChange={quizDialogHandler}>
           <DialogTrigger asChild />
           {mode === 'leet-code' ? (
@@ -165,7 +198,7 @@ function Grid({
         </Dialog>
       )}
 
-      {isModalOpen.confirm && currentQuestion && (
+      {isModalOpen.confirm && (
         <Dialog
           open={isModalOpen.confirm}
           onOpenChange={(open) => {
@@ -203,7 +236,7 @@ function Grid({
         </Dialog>
       )}
 
-      {isModalOpen.gameover && currentQuestion && (
+      {isModalOpen.gameover && (
         <Dialog open={isModalOpen.gameover}>
           <DialogTrigger asChild />
           <DialogContent className="max-w-3xl" hideX={true}>

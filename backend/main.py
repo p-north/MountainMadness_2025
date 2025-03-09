@@ -45,16 +45,16 @@ async def lifespan(app: FastAPI):
         yield
 
 app = FastAPI(lifespan=lifespan)
-# CMD: uvicorn main:app --host 0.0.0.0 --port 5000 --reload
+# CMD: uvicorn main:app --host 0.0.0.0 --port 3000 --reload
 
 # Add CORS middleware
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["http://localhost:5173"],  # Allow only this origin
-#     allow_credentials=True,
-#     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
-#     allow_headers=["*"],  # Allow all headers
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Allow only this origin
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 @app.get("/")
 def root():

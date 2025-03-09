@@ -12,7 +12,8 @@ export function BehaviorQuiz({ question }: { question: { title: string; descript
 
   return (
     <DialogContent className="max-w-[calc(100%-2rem)] h-[60vh]">
-      <DialogHeader>
+      {question ? <>
+        <DialogHeader>
         <DialogTitle>{question.title}</DialogTitle>
         <DialogDescription>{question.description}</DialogDescription>
       </DialogHeader>
@@ -30,6 +31,7 @@ export function BehaviorQuiz({ question }: { question: { title: string; descript
           Submit Answer
         </Button>
       </div>
+    </> : <div>Loading...</div>}
     </DialogContent>
   );
 }

@@ -25,7 +25,7 @@ interface CodeQuizProps {
 }
 
 export function CodeQuiz({ question }: CodeQuizProps) {
-  const [code, setCode] = useState(question.code);
+  const [code, setCode] = useState(question?.code);
   const [output, setOutput] = useState<string>('');
   const [isRunning, setIsRunning] = useState(false);
   const [testCases, setTestCases] = useState<string[][]>([[""]]); // Initial test case
@@ -122,7 +122,9 @@ export function CodeQuiz({ question }: CodeQuizProps) {
 
   return (
     <DialogContent className="max-w-[calc(100%-2rem)] h-[90vh]">
-      <DialogHeader>
+      {
+        question ? <>
+        <DialogHeader>
         <DialogTitle>{question.title}</DialogTitle>
         <span className={`inline-block text-sm px-2 py-1 rounded ${
           question.difficulty === 'Easy' ? 'bg-green-100 text-green-700' :
@@ -206,6 +208,12 @@ export function CodeQuiz({ question }: CodeQuizProps) {
           </div>
         </div>
       </div>
+
+          </> : <DialogHeader>
+        <DialogTitle>Loading...</DialogTitle>
+      </DialogHeader>
+      }
+      
     </DialogContent>
   );
 }

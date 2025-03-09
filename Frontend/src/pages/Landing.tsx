@@ -11,15 +11,6 @@ const Landing = () => {
     const leaderboard = useLoaderData();
     console.log({leaderboard});
 
-  useEffect(() => {
-    const test = async () => {
-      const res = await fetch('http://localhost:5000/');
-      const data = await res.json();
-      console.log(data);
-    };
-    test();
-  });
-
   return (
     <div className="relative z-10 container mx-auto px-4 py-8">
       {/* Header */}
@@ -142,7 +133,7 @@ export default Landing;
 
 export const loader = async () => {
     console.log(import.meta.env.VITE_SERVER_URL);
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard`);
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/leetcode`);
   const data = await res.json();
-  return data;
+  return null;
 }
