@@ -10,6 +10,8 @@ import { CodeQuiz } from './code-modal'; // Ensure correct import path
 import { BehaviorQuiz } from './behavior-modal';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+// import { useScore } from '@/util/score-context';
+import { redirect } from 'react-router';
 
 
 
@@ -23,6 +25,8 @@ function Grid({
   mode: string;
   callback: Function;
 }) {
+  // const {score, setScore} = useScore(); 
+  
   let rows = 0;
   let cols = 0;
 
@@ -114,7 +118,7 @@ function Grid({
           quiz: true,
         }));
         }
-      } else {
+        
         callback((prevScore: number) => prevScore + 1);
       }
   };
@@ -137,18 +141,44 @@ function Grid({
 
     else if (mode === "leet-code"){
       //Send name to leet-code leader board
+      fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/leetcode`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: name,
+            score: score
+        })
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error("Error:", error));
 
-
-
+      redirect('/');
       return;
     }
 
     else if(mode === "behavior"){
        //Send name to behavior leader board
+       fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/behaviour`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: name,
+            // score: score,
+        })
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error("Error:", error));
+        
 
 
 
-
+        redirect('/');
        return;
     }
   }
