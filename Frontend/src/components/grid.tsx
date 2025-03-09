@@ -140,8 +140,8 @@ function Grid({
       alert('Enter your name');
       return;
     }
-
     else if (mode === "leet-code"){
+      setIsSubmitting(true);
       //Send name to leet-code leader board
       fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/leetcode`, {
         method: "POST",
@@ -158,6 +158,7 @@ function Grid({
       .catch(error => console.error("Error:", error));
 
       navigate('/');
+      setIsSubmitting(false);
       return;
     }
 
@@ -179,6 +180,7 @@ function Grid({
       .catch(error => console.error("Error:", error));
         
       navigate('/');
+      setIsSubmitting(false);
       return;
     }
   }
