@@ -8,3 +8,5 @@ elevenlabs
 boto3
 awscli
 contextlib
+google
+google-genai

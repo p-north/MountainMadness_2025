@@ -88,11 +88,11 @@ async def upload_audio():
 
 
 # Upload to S3, then retrieve from S3
-# IGNORE THIS ENDPOINT FOR NOW
-# @app.get("/get-audio")
-# async def getAudio(fileName: str = Body(...)):
-#     fileUrl = get_S3_Url(fileName)
-#     return {"message": "File generated successfully", "file_url": fileUrl, "status":200}
+@app.get("/get-audio")
+async def getAudio():
+    # get the links
+    fileUrl =  await get_S3_Url()
+    return {"message": "File generated successfully", "fileUrl": fileUrl, "status":200}
     
     
     

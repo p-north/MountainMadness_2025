@@ -64,6 +64,8 @@ async def generateAndUploadAudio():
     with open(save_file_path, "rb") as file:
         response = await upload_S3(file, save_file_path)
     
+    # close the file
+    file.close()
     # Delete the file after uploading to AWS S3
     os.remove(save_file_path)
     
