@@ -105,7 +105,7 @@ async def get_questions(difficultyLevel: str):
 async def get_question_lc(difficultyLevel: str):
     return {"question": generate_lc(difficultyLevel)}
 
-# Inserts noew entries into behaviour
+# Inserts new entries into behaviour
 @app.post("/leaderboard/behaviour", response_model=Behaviour_LD)
 def create_behaviour_leaderboard_entry(entry: Behaviour_LD):
     connection = get_db_connection()

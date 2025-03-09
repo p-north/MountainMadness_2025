@@ -12,6 +12,12 @@ import CodeMirror from '@uiw/react-codemirror';
 import { Play } from 'lucide-react';
 import { useState } from 'react';
 
+
+
+
+
+
+
 interface QuizQuestion {
   id: number;
   title: string;
@@ -25,6 +31,17 @@ interface CodeQuizProps {
 }
 
 export function CodeQuiz({ question }: CodeQuizProps) {
+
+  fetch(`${import.meta.env.VITE_SERVER_URL}/audio`,{
+    method: "POST",
+    headers:{
+      "Content-Type" : "application/json"
+    }
+    })
+    .then(response => response.json() )
+    .then(data => (console.log(data)));
+
+
   const [code, setCode] = useState(question?.code);
   const [output, setOutput] = useState<string>('');
   const [isRunning, setIsRunning] = useState(false);
