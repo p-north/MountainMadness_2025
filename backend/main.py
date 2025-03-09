@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, HTTPException
 from database import get_db_connection
 from models import Leaderboard, Audio
 from typing import List
-from behavioural_q import generate_q
+from behavioural_q import generate_q, responsd_to_answer
 from contextlib import asynccontextmanager
 
 # Create table if it doesn't exist
@@ -107,3 +107,12 @@ def get_leaderboard():
     finally:
         cursor.close()
         connection.close()
+
+@app.get("/response")
+async def get_response(request: Request):
+    body = await request.json()
+    answer = body.get("Answer")
+    question = body.get("Question")
+    print(answer)
+    print(question)
+    return {"AI_answer": responsd_to_answer(question, answer)}
