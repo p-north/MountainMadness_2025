@@ -1,5 +1,6 @@
 import { Brain, Code2, Crown, Swords } from 'lucide-react';
-import { Link } from 'react-router';
+import { useEffect } from 'react';
+import { Link, useLoaderData } from 'react-router';
 import '../App.css';
 import LeaderboardTable from '../components/landing/LeaderboardTable';
 import { Button } from '../components/ui/button';
@@ -7,6 +8,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 
 const Landing = () => {
+    const leaderboard = useLoaderData();
+    console.log({leaderboard});
+
+  useEffect(() => {
+    const test = async () => {
+      const res = await fetch('http://localhost:5000/');
+      const data = await res.json();
+      console.log(data);
+    };
+    test();
+  });
+
   return (
     <div className="relative z-10 container mx-auto px-4 py-8">
       {/* Header */}
@@ -15,7 +28,10 @@ const Landing = () => {
           <Swords className="h-12 w-12 text-primary animate-pulse" />
           <h1 className="text-4xl font-bold">Click and Regret</h1>
         </div>
-        <p className="text-lg text-muted-foreground">Click AND Regret is an interactive Minesweeper-style game where users predict the game mode and navigate through tiles.</p>
+        <p className="text-lg text-muted-foreground">
+          Click AND Regret is an interactive Minesweeper-style game where users predict
+          the game mode and navigate through tiles.
+        </p>
       </div>
 
       {/* Game Modes */}
@@ -123,3 +139,10 @@ const Landing = () => {
 };
 
 export default Landing;
+
+export const loader = async () => {
+    console.log(import.meta.env.VITE_SERVER_URL);
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard`);
+  const data = await res.json();
+  return data;
+}
