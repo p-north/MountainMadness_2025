@@ -3,10 +3,9 @@ import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from "react-router";
 import './index.css';
 import Board from './pages/Board.tsx';
-import Landing from './pages/Landing.tsx';
+import Landing, { loader as LeaderboardLoader } from './pages/Landing.tsx';
 import RootLayout from './pages/RootLayout.tsx';
 import { ScoreContextProvider } from './util/score-context.tsx';
-import Score from './components/score-board.tsx';
 
 // const ScoreContext = createContext<number>(0); 
 const router = createBrowserRouter([
@@ -15,14 +14,15 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [{
       index: true,
-      element: <Landing />
+      element: <Landing />,
+      loader: LeaderboardLoader
     },
     {
       path: "leet-code",
       children: [
         {
           path: "easy",
-          element: <Board />
+          element: <Board />, 
         },
         {
           path: "medium",
