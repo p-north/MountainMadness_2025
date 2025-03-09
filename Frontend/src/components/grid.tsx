@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { CodeQuiz } from './code-modal'; // Ensure correct import path
+import { BehaviorQuiz } from './behavior-modal';
 
 function Grid({ difficulty, mode, callback }: { difficulty: string; mode: string; callback: Function }) {
   let rows = 0;
@@ -15,14 +18,14 @@ function Grid({ difficulty, mode, callback }: { difficulty: string; mode: string
     cols = 8;
   }
 
-  // State to store randomly selected cells
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
-  // State to track clicked cells
   const [clickedCells, setClickedCells] = useState<Set<string>>(new Set());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState<any>(null);
 
   useEffect(() => {
     const totalCells = rows * cols;
-    const numSelectedCells = Math.floor(totalCells * 0.25); // 25% of the grid
+    const numSelectedCells = Math.floor(totalCells * 0.25);
     const newSelectedCells = new Set<string>();
 
     while (newSelectedCells.size < numSelectedCells) {
@@ -32,7 +35,7 @@ function Grid({ difficulty, mode, callback }: { difficulty: string; mode: string
     }
 
     setSelectedCells(newSelectedCells);
-    setClickedCells(new Set()); // Reset clicked cells when difficulty changes
+    setClickedCells(new Set());
   }, [rows, cols]);
 
   // Handle cell click
@@ -43,7 +46,15 @@ function Grid({ difficulty, mode, callback }: { difficulty: string; mode: string
       setClickedCells((prev) => new Set(prev).add(cellKey));
 
       if (selectedCells.has(cellKey)) {
-        alert(`🎉 You found a selected cell at Row ${rowIndex + 1}, Col ${colIndex + 1}!`);
+        // Open modal with question data
+        setCurrentQuestion({
+          id: 1,
+          title: 'Two Sum',
+          description: 'Given an array of numbers, return indices of the two numbers that add up to a target.',
+          code: `function solution(nums, target) {\n  // Your code here. Do not change the function name.\n}`,
+          difficulty: difficulty.charAt(0).toUpperCase() + difficulty.slice(1),
+        });
+        setIsModalOpen(true);
       } else {
         callback((prevScore: number) => prevScore + 1);
       }
@@ -79,6 +90,13 @@ function Grid({ difficulty, mode, callback }: { difficulty: string; mode: string
           );
         })}
       </div>
+
+      {isModalOpen && currentQuestion && (
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogTrigger asChild />
+          {mode === 'leet-code' ? <CodeQuiz question={currentQuestion} /> : <BehaviorQuiz question={currentQuestion} />}
+        </Dialog>
+      )}
     </div>
   );
 }
