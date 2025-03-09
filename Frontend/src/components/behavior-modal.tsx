@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Loader } from "./ui/loader";
 
 export function BehaviorQuiz({ question }: { question: { title: string; description: string } }) {
   const [answer, setAnswer] = useState("");
@@ -31,7 +32,7 @@ export function BehaviorQuiz({ question }: { question: { title: string; descript
           Submit Answer
         </Button>
       </div>
-    </> : <div>Loading...</div>}
+    </> : <div className="w-full h-full flex justify-center items-center"><Loader /></div>}
     </DialogContent>
   );
 }

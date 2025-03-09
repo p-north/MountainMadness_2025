@@ -10,7 +10,7 @@ import { CodeQuiz } from './code-modal'; // Ensure correct import path
 import { BehaviorQuiz } from './behavior-modal';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-// import { useScore } from '@/util/score-context';
+import { useScore } from '@/util/score-context';
 import { redirect } from 'react-router';
 
 
@@ -25,7 +25,7 @@ function Grid({
   mode: string;
   callback: Function;
 }) {
-  // const {score, setScore} = useScore(); 
+  const {score, setScore} = useScore(); 
   
   let rows = 0;
   let cols = 0;
@@ -50,7 +50,7 @@ function Grid({
   });
   const [currentQuestion, setCurrentQuestion] = useState<any>(null);
   const [name, setName] = useState('');
-  const [question, setQuestion] = useState("");
+
   useEffect(() => {
     const totalCells = rows * cols;
     const numSelectedCells = Math.floor(totalCells * 0.25);
@@ -75,8 +75,6 @@ function Grid({
 
       if (selectedCells.has(cellKey)) {
         // Open modal with question data
-        console.log(mode);
-        
         if(mode === "behavior"){
           console.log("Hello");
           fetch(`${import.meta.env.VITE_SERVER_URL}/questions/behaviour/${difficulty}`)
@@ -107,7 +105,8 @@ function Grid({
               setCurrentQuestion({
                 title: question.title,
                 description: question.description,
-                code: `function solution(${question.functionSignature}) { \n  // Your code here. Do not change the function name.\n }`
+                difficulty,
+                code: `def solution():\n  # Your code here. Do not change the function name.`
               });
             } );
 
@@ -118,7 +117,6 @@ function Grid({
           quiz: true,
         }));
         }
-        
         callback((prevScore: number) => prevScore + 1);
       }
   };

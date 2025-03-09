@@ -132,8 +132,7 @@ const Landing = () => {
 export default Landing;
 
 export const loader = async () => {
-    console.log(import.meta.env.VITE_SERVER_URL);
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/leetcode`);
-  const data = await res.json();
+//   const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/leetcode`);
+//   const data = await res.json();
   return null;
 }
