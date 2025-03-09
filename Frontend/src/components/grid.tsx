@@ -93,7 +93,6 @@ function Grid({
         }
 
         else {
-
           console.log('data fetching..');
          
             fetch(`${import.meta.env.VITE_SERVER_URL}/questions/leetcode/${difficulty}`)
@@ -157,27 +156,25 @@ function Grid({
       return;
     }
 
-    else if(mode === "behavior"){
+    else {
        //Send name to behavior leader board
-       fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/behaviour`, {
+
+       fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/${mode === 'behavior' ? 'behaviour' : 'leetcode'}'`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
             name: name,
-            // score: score,
+            score: score,
         })
       })
       .then(response => response.json())
       .then(data => console.log(data))
       .catch(error => console.error("Error:", error));
         
-
-
-
-        redirect('/');
-       return;
+      redirect('/');
+      return;
     }
   }
 
@@ -270,6 +267,7 @@ function Grid({
           <DialogContent className="max-w-3xl" hideX={true}>
             <DialogHeader>
               <DialogTitle>Gameover</DialogTitle>
+              <p className="text-center">Your score: {score}</p>
             </DialogHeader>
             <form onSubmit={submitHandler} className="space-y-2">
               <Input placeholder='Enter your name' value={name} onChange={(e) => {
