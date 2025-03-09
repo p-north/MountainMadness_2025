@@ -65,8 +65,6 @@ Click AND Regret is an interactive Minesweeper-style game where users predict th
 ## Contributing
 Feel free to submit pull requests or open issues to improve the game.
 
-## License
-This project is licensed under the MIT License.
 
 ## Contact
-For any inquiries or feedback, reach out to [your email or GitHub profile link].
+For any inquiries or feedback, reach out to founding devs.
