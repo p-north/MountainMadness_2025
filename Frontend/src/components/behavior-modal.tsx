@@ -3,12 +3,41 @@ import { DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/c
 import { Button } from "@/components/ui/button";
 import { Loader } from "./ui/loader";
 
-export function BehaviorQuiz({ question }: { question: { title: string; description: string } }) {
+export function BehaviorQuiz({ question, handleModals }: { question: { title: string; description: string }, handleModals: (prev?: any) => void }) {
   const [answer, setAnswer] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    console.log("Submitted Answer:", answer);
-    alert("Your answer has been submitted!");
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/response`, {
+      method: 'POST',
+      body: JSON.stringify({
+        Question: question.description, 
+        Answer: answer
+      })
+    })
+
+    const data = await res.json();
+    const judge = data?.AI_answer?.split('/10') || [];
+    if (judge.length) {
+      const score = parseInt(judge[0].slice(judge[0].length - 2, judge[0].length));
+      if (!isNaN(score) && score > 5) {
+        handleModals((prev: any) => ({
+          ...prev,
+          quiz: false
+        }));
+      } else {
+        console.log(data?.AI_answer);
+        handleModals((prev: any) => ({
+          ...prev,
+          quiz: false,
+          gameover: { description: data?.AI_answer }
+        }));
+      }
+  }
+
+  setIsSubmitting(false);
+
   };
 
   return (
@@ -28,8 +57,8 @@ export function BehaviorQuiz({ question }: { question: { title: string; descript
           onChange={(e) => setAnswer(e.target.value)}
         />
 
-        <Button onClick={handleSubmit} className="w-full bg-blue-500 text-white">
-          Submit Answer
+        <Button onClick={handleSubmit} className="w-full bg-blue-500 text-white" disabled={isSubmitting}>
+          {isSubmitting ? <div className="w-full h-full flex justify-center items-center"><Loader className="text-white" /></div> : 'Submit Answer'}
         </Button>
       </div>
     </> : <div className="w-full h-full flex justify-center items-center"><Loader /></div>}

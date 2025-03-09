@@ -14,9 +14,6 @@ import { useScore } from '@/util/score-context';
 import { Link, useNavigate } from 'react-router';
 import { Loader } from './ui/loader';
 
-
-
-
 function Grid({
   difficulty,
   mode,
@@ -27,8 +24,8 @@ function Grid({
   callback: Function;
 }) {
   const navigate = useNavigate();
-  const {score, setScore} = useScore(); 
-  
+  const { score, setScore } = useScore();
+
   let rows = 0;
   let cols = 0;
 
@@ -45,7 +42,11 @@ function Grid({
 
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
   const [clickedCells, setClickedCells] = useState<Set<string>>(new Set());
-  const [isModalOpen, setIsModalOpen] = useState({
+  const [isModalOpen, setIsModalOpen] = useState<{
+    quiz: boolean;
+    confirm: boolean;
+    gameover: boolean | { description: string };
+  }>({
     quiz: false,
     confirm: false,
     gameover: false,
@@ -70,58 +71,70 @@ function Grid({
   }, [rows, cols]);
 
   // Handle cell click
-  const handleCellClick = (rowIndex: number, colIndex: number) => {
-    const cellKey = `${rowIndex}-${colIndex}`;
-
-    if (!clickedCells.has(cellKey)) {
-      setClickedCells((prev) => new Set(prev).add(cellKey));
-
-      if (selectedCells.has(cellKey)) {
-        // Open modal with question data
-        if(mode === "behavior"){
-          console.log("Hello");
-          fetch(`${import.meta.env.VITE_SERVER_URL}/questions/behaviour/${difficulty}`)
-          .then((response) => response.json())
-          .then((data) => {
-            setCurrentQuestion({
-              title: 'Behavioral Questions',
-              description: data.question,
+    // Handle cell click
+    const handleCellClick = (rowIndex: number, colIndex: number) => {
+      const cellKey = `${rowIndex}-${colIndex}`;
+  
+      if (!clickedCells.has(cellKey)) {
+        setClickedCells((prev) => {
+          const newClickedCells = new Set(prev).add(cellKey);
+  
+          // Check if all cells have been clicked
+          if (newClickedCells.size === rows * cols) {
+            setIsModalOpen({
+              quiz: false,
+              confirm: false,
+              gameover: { description: "Congratulations! You clicked all tiles!" },
             });
-          });
-
+          }
+  
+          return newClickedCells;
+        });
+  
+        if (selectedCells.has(cellKey)) {
+          // Open modal with question data
+          if (mode === 'behavior') {
+            console.log('Hello');
+            fetch(`${import.meta.env.VITE_SERVER_URL}/questions/behaviour/${difficulty}`)
+              .then((response) => response.json())
+              .then((data) => {
+                setCurrentQuestion({
+                  title: 'Behavioral Questions',
+                  description: data.question,
+                });
+              });
+  
+            setIsModalOpen((prev) => ({
+              ...prev,
+              quiz: true,
+            }));
+          } else {
+            console.log('data fetching..');
+  
+            fetch(`${import.meta.env.VITE_SERVER_URL}/questions/leetcode/${difficulty}`)
+              .then((response) => response.json())
+              .then((data) => {
+                console.log(data);
+  
+                const question = data.question;
+                setCurrentQuestion({
+                  title: question.title,
+                  description: question.description,
+                  difficulty,
+                  code: `def solution():\n  # Your code here. Do not change the function name.`,
+                });
+              });
+          }
+  
           setIsModalOpen((prev) => ({
             ...prev,
-            quiz: true
+            quiz: true,
           }));
-        }
-
-        else {
-          console.log('data fetching..');
-         
-            fetch(`${import.meta.env.VITE_SERVER_URL}/questions/leetcode/${difficulty}`)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-             
-                const question = data.question;
-              setCurrentQuestion({
-                title: question.title,
-                description: question.description,
-                difficulty,
-                code: `def solution():\n  # Your code here. Do not change the function name.`
-              });
-            } );
-
-          }
-
-        setIsModalOpen((prev) => ({
-          ...prev,
-          quiz: true,
-        }));
         }
         callback((prevScore: number) => prevScore + 1);
       }
-  };
+    };
+  
 
   const quizDialogHandler = (open: boolean) => {
     if (!open) {
@@ -136,54 +149,56 @@ function Grid({
   const submitHandler = (e: any) => {
     e.preventDefault();
 
-    if(name === ""){
+    if (name === '') {
       alert('Enter your name');
       return;
-    }
-    else if (mode === "leet-code"){
+    } else if (mode === 'leet-code') {
       setIsSubmitting(true);
       //Send name to leet-code leader board
       fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/leetcode`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-            "Content-Type": "application/json"
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            name: name,
-            score: score
-        })
+          name: name,
+          score: score,
+        }),
       })
-      .then(response => response.json())
-      .then(data => console.log(data))
-      .catch(error => console.error("Error:", error));
+        .then((response) => response.json())
+        .then((data) => console.log(data))
+        .catch((error) => console.error('Error:', error));
 
       navigate('/');
       setIsSubmitting(false);
       return;
-    }
+    } else {
+      //Send name to behavior leader board
 
-    else {
-       //Send name to behavior leader board
-
-       fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/${mode === 'behavior' ? 'behaviour' : 'leetcode'}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
+      fetch(
+        `${import.meta.env.VITE_SERVER_URL}/leaderboard/${
+          mode === 'behavior' ? 'behaviour' : 'leetcode'
+        }`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
             name: name,
             score: score,
-        })
-      })
-      .then(response => response.json())
-      .then(data => console.log(data))
-      .catch(error => console.error("Error:", error));
-        
+          }),
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => console.log(data))
+        .catch((error) => console.error('Error:', error));
+
       navigate('/');
       setIsSubmitting(false);
       return;
     }
-  }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen p-5">
@@ -223,9 +238,9 @@ function Grid({
         <Dialog open={isModalOpen.quiz} onOpenChange={quizDialogHandler}>
           <DialogTrigger asChild />
           {mode === 'leet-code' ? (
-            <CodeQuiz question={currentQuestion} />
+            <CodeQuiz question={currentQuestion} handleModals={setIsModalOpen} />
           ) : (
-            <BehaviorQuiz question={currentQuestion} />
+            <BehaviorQuiz question={currentQuestion} handleModals={setIsModalOpen} />
           )}
         </Dialog>
       )}
@@ -269,22 +284,37 @@ function Grid({
       )}
 
       {isModalOpen.gameover && (
-        <Dialog open={isModalOpen.gameover}>
+        <Dialog open={!!isModalOpen.gameover}>
           <DialogTrigger asChild />
           <DialogContent className="max-w-3xl" hideX={true}>
             <DialogHeader>
               <DialogTitle>Gameover</DialogTitle>
               <p className="text-center">Your score: {score}</p>
+              {typeof(isModalOpen.gameover) !== 'boolean' && isModalOpen.gameover?.description && (
+                <p className="text-center">{isModalOpen.gameover?.description}</p>
+              )}
             </DialogHeader>
             <form onSubmit={submitHandler} className="space-y-2">
-              <Input placeholder='Enter your name' value={name} onChange={(e) => {
-                setName(e.target.value);
-              }} />
+              <Input
+                placeholder="Enter your name"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+              />
               <Button className="w-full" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? <div className='w-full h-full flex justify-center items-center'><Loader /></div> : 'Submit'}
+                {isSubmitting ? (
+                  <div className="w-full h-full flex justify-center items-center">
+                    <Loader />
+                  </div>
+                ) : (
+                  'Submit'
+                )}
               </Button>
               <Link to="/">
-                <Button className="w-full" variant="ghost" type="button">Close without ranking registration</Button>
+                <Button className="w-full" variant="ghost" type="button">
+                  Close without ranking registration
+                </Button>
               </Link>
             </form>
           </DialogContent>
