@@ -170,10 +170,10 @@ sys.stdout = original_stdout
     })
 
     const data = await res.json();
-    const judge = data?.AI_answer?.split('/10') || [];
-    if (judge.length) {
-      const score = parseInt(judge[0].slice(judge[0].length - 2, judge[0].length));
-      if (!isNaN(score) && score > 5) {
+    const judge = data?.AI_answer?.score;
+    
+    if (judge) {
+      if (!isNaN(judge) && judge > 5) {
         handleModals((prev: any) => ({
           ...prev,
           quiz: false
