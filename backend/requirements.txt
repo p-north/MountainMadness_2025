@@ -5,4 +5,6 @@ pydantic
 mysql-connector-python
 openai
 elevenlabs
+boto3
+awscli
 contextlib

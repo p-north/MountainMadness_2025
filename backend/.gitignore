@@ -1,4 +1,5 @@
 .venv
 .env
 __pycache__
+.aws/
 test_question_answer.py

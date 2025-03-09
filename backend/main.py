@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Request, HTTPException
+from ai_insults import gennerateAndUploadAudio
+from S3_upload import get_S3_Url
+from fastapi import FastAPI, Request, HTTPException, Body
 from database import get_db_connection
 from models import Leaderboard, Audio
 from typing import List
@@ -34,12 +36,27 @@ async def lifespan(app: FastAPI):
         yield
 
 app = FastAPI(lifespan=lifespan)
+# CMD: uvicorn main:app --host 0.0.0.0 --port 5000 --reload
 
 @app.get("/")
 def root():
     return {"message": "Hello World"}
 
-# CMD: uvicorn main:app --host 0.0.0.0 --port 5000 --reload
+@app.post("/upload-audio")
+async def upload_audio():
+    fileUrl = await gennerateAndUploadAudio()
+    return {"message": "File generated successfully", "file_url": fileUrl, "status":201}
+    
+    
+
+# Upload to S3, then retrieve from S3
+@app.get("/get-audio")
+async def getAudio(fileName: str = Body(...)):
+    fileUrl = get_S3_Url(fileName)
+    return {"message": "File generated successfully", "file_url": fileUrl, "status":200}
+    
+    
+    
 
 @app.get("/questions")
 async def get_questions(request: Request):
