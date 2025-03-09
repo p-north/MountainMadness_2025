@@ -35,7 +35,7 @@ export function BehaviorQuiz({ question, handleModals }: { question: { title: st
         handleModals((prev: any) => ({
           ...prev,
           quiz: false,
-          gameover: { description: data?.AI_answer }
+          gameover: { description: data?.AI_answer.feedback }
         }));
       }
   }
