@@ -39,14 +39,14 @@ interface CodeQuizProps {
 
 export function CodeQuiz({ question }: CodeQuizProps) {
 
-  fetch(`${import.meta.env.VITE_SERVER_URL}/audio`,{
-    method: "POST",
-    headers:{
-      "Content-Type" : "application/json"
-    }
-    })
-    .then(response => response.json() )
-    .then(data => (console.log(data)));
+  // fetch(`${import.meta.env.VITE_SERVER_URL}/audio`,{
+  //   method: "POST",
+  //   headers:{
+  //     "Content-Type" : "application/json"
+  //   }
+  //   })
+  //   .then(response => response.json() )
+  //   .then(data => (console.log(data)));
 
   const [code, setCode] = useState(question?.code || '');
   const [output, setOutput] = useState<string>('');

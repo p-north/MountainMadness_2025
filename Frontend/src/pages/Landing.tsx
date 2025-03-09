@@ -1,5 +1,4 @@
 import { Brain, Code2, Crown, Swords } from 'lucide-react';
-import { useEffect } from 'react';
 import { Link, useLoaderData } from 'react-router';
 import '../App.css';
 import LeaderboardTable from '../components/landing/LeaderboardTable';
@@ -9,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 
 const Landing = () => {
     const leaderboard = useLoaderData();
-    console.log({leaderboard});
 
   return (
     <div className="relative z-10 container mx-auto px-4 py-8">
@@ -106,20 +104,12 @@ const Landing = () => {
             </TabsList>
             <TabsContent value="leetcode">
               <LeaderboardTable
-                data={[
-                  { rank: 1, name: 'Alex Chen', score: 2500 },
-                  { rank: 2, name: 'Sarah Kim', score: 2350 },
-                  { rank: 3, name: 'Mike Johnson', score: 2200 },
-                ]}
+                data={leaderboard.leetcode}
               />
             </TabsContent>
             <TabsContent value="behavior">
               <LeaderboardTable
-                data={[
-                  { rank: 1, name: 'Emma Davis', score: 1800 },
-                  { rank: 2, name: 'James Wilson', score: 1650 },
-                  { rank: 3, name: 'Lisa Brown', score: 1500 },
-                ]}
+                data={leaderboard.behavior}
               />
             </TabsContent>
           </Tabs>
@@ -132,7 +122,15 @@ const Landing = () => {
 export default Landing;
 
 export const loader = async () => {
-//   const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/leetcode`);
-//   const data = await res.json();
-  return null;
+    console.log(import.meta.env.VITE_SERVER_URL);
+  const leetcodeRes = await fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/leetcode`);
+  const leetcodeData = await leetcodeRes.json();
+
+  const behaviourRes = await fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/behaviour`);
+  const behaviourData = await behaviourRes.json();
+  
+  return {
+    leetcode: leetcodeData.map((item: any, idx: number) => ({...item, rank: idx + 1})),
+    behavior: behaviourData.map((item: any, idx: number) => ({...item, rank: idx + 1}))
+  };
 }
