@@ -1,4 +1,4 @@
-from ai_insults import gennerateAndUploadAudio
+from ai_insults import generateAndUploadAudio
 from S3_upload import get_S3_Url
 from fastapi import FastAPI, Request, HTTPException, Body
 from database import get_db_connection
@@ -6,7 +6,7 @@ from models import Leaderboard, Audio
 from typing import List
 from behavioural_q import generate_q, responsd_to_answer
 from contextlib import asynccontextmanager
-
+from fastapi.middleware.cors import CORSMiddleware
 # Create table if it doesn't exist
 
 @asynccontextmanager
@@ -38,13 +38,22 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 # CMD: uvicorn main:app --host 0.0.0.0 --port 5000 --reload
 
+# Add CORS middleware
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["http://localhost:5173"],  # Allow only this origin
+#     allow_credentials=True,
+#     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
+#     allow_headers=["*"],  # Allow all headers
+# )
+
 @app.get("/")
 def root():
     return {"message": "Hello World"}
 
 @app.post("/upload-audio")
 async def upload_audio():
-    fileUrl = await gennerateAndUploadAudio()
+    fileUrl = await generateAndUploadAudio()
     return {"message": "File generated successfully", "file_url": fileUrl, "status":201}
     
     
