@@ -7,7 +7,15 @@ class Audio(BaseModel):
     
     class Config:
         from_attributes = True
-class Leaderboard(BaseModel):
+class Behaviour_LD(BaseModel):
+    id: int | None = None
+    name: str
+    score: int
+    rank: int | None = None
+    
+    class Config:
+        from_attributes = True
+class Leetcode_LD(BaseModel):
     id: int | None = None
     name: str
     score: int
