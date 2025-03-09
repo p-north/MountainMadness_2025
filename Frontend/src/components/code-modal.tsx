@@ -36,18 +36,12 @@ interface QuizQuestion {
 interface CodeQuizProps {
   question: QuizQuestion;
   handleModals: (prev?: any) => void;
+  audio: string;
 }
 
-export function CodeQuiz({ question, handleModals }: CodeQuizProps) {
+export function CodeQuiz({ question, handleModals, audio }: CodeQuizProps) {
 
-  // fetch(`${import.meta.env.VITE_SERVER_URL}/audio`,{
-  //   method: "POST",
-  //   headers:{
-  //     "Content-Type" : "application/json"
-  //   }
-  //   })
-  //   .then(response => response.json() )
-  //   .then(data => (console.log(data)));
+  
 
   const [code, setCode] = useState(question?.code || '');
   const [output, setOutput] = useState<string>('');
@@ -195,6 +189,14 @@ sys.stdout = original_stdout
     }
     setIsSubmitting(false);
   }
+
+  useEffect(() => {
+    if (question && audio) {
+      const quizAudio = new Audio(audio);
+      quizAudio.play();
+      console.log({audio, quizAudio});
+    }
+  }, [question, audio]);
 
   return (
     <DialogContent className={`max-w-[calc(100%-2rem)] h-[90vh] ${question ? 'flex flex-col justify-between': ''}`}>
