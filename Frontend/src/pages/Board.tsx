@@ -7,10 +7,11 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router";
 
 const jumpscareImages: string[] = [
-  "https://www.icegif.com/wp-content/uploads/2024/05/cat-icegif-4.gif",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqq2ac_J6EJQTajAzEN9vSIEGM7NisGncWvA&s",
-  "https://i.pinimg.com/originals/9a/3c/3f/9a3c3fb5f73822af8514df07f6676392.gif",
-  "https://i.pinimg.com/originals/c4/c5/3c/c4c53c48cc5ef5d0af630ba961c5ca73.gif"
+  'https://media.tenor.com/VXLAU_AIlF4AAAAM/jumpscare-ring-jumpscare.gif',
+  'https://i.pinimg.com/originals/f2/50/d3/f250d38a6b842872560d414de477a3ea.gif',
+  'https://media1.giphy.com/media/28aGE5xerXkbK/200.gif?cid=6c09b952bagks3ixakpj511ctubv9nngdtjebz48921i1z2n&ep=v1_gifs_search&rid=200.gif&ct=g',
+  'https://www.gifcen.com/wp-content/uploads/2022/11/scary-gif-2.gif',
+  'https://media.tenor.com/PPinUoLk4MoAAAAM/scary.gif',
 ];
 
 const Board = () => {

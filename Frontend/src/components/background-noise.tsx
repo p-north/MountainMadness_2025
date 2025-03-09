@@ -35,22 +35,24 @@ function Noise({speed}: {speed:number;}) {
     }, [score]);
     
     const handleBtnClick = () => {
-        setPlaySound(!soundPlaying);
-        console.log({soundPlaying});
-        console.log(soundPlaying)
-        if (soundPlaying){
-            audio.loop = true;
-            audio.play();
-        } else {
-            audio.pause();
-        }
+        setPlaySound((soundPlaying) => {
+            if (soundPlaying){
+                audio.pause();
+            } else {
+                audio.loop = true;
+                audio.play();
+            }
+
+            return !soundPlaying;
+        });
+        
     }
 
 
     // return null;
     return(<>
     <button onClick={handleBtnClick} className="cursor-pointer">
-        {soundPlaying ? <MuteIcon className="w-[40px]" /> : <SoundIcon className="w-[36px]" />}
+        {soundPlaying ? <SoundIcon className="w-[36px]" /> : <MuteIcon className="w-[40px]" />}
     </button>
     </>)
 
