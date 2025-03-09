@@ -35,9 +35,10 @@ interface QuizQuestion {
 
 interface CodeQuizProps {
   question: QuizQuestion;
+  handleModals: (prev?: any) => void;
 }
 
-export function CodeQuiz({ question }: CodeQuizProps) {
+export function CodeQuiz({ question, handleModals }: CodeQuizProps) {
 
   // fetch(`${import.meta.env.VITE_SERVER_URL}/audio`,{
   //   method: "POST",
@@ -53,6 +54,7 @@ export function CodeQuiz({ question }: CodeQuizProps) {
   const [isRunning, setIsRunning] = useState(false);
   const [testCases, setTestCases] = useState<string[][]>([]); // Initial test case
   const [pyodide, setPyodide] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setCode(question?.code);
@@ -163,8 +165,39 @@ sys.stdout = original_stdout
     }
   };
 
+  const submitHandler = async () => {
+    setIsSubmitting(true);
+    const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/response`, {
+      method: 'POST',
+      body: JSON.stringify({
+        Question: question.description, 
+        Answer: code 
+      })
+    })
+
+    const data = await res.json();
+    const judge = data?.AI_answer?.split('/10') || [];
+    if (judge.length) {
+      const score = parseInt(judge[0].slice(judge[0].length - 2, judge[0].length));
+      if (!isNaN(score) && score > 5) {
+        handleModals((prev: any) => ({
+          ...prev,
+          quiz: false
+        }));
+      } else {
+        console.log(data?.AI_answer);
+        handleModals((prev: any) => ({
+          ...prev,
+          quiz: false,
+          gameover: { description: data?.AI_answer }
+        }));
+      }
+    }
+    setIsSubmitting(false);
+  }
+
   return (
-    <DialogContent className="max-w-[calc(100%-2rem)] h-[90vh]">
+    <DialogContent className={`max-w-[calc(100%-2rem)] h-[90vh] ${question ? 'flex flex-col justify-between': ''}`}>
       {
         question ? <>
         <DialogHeader>
@@ -212,46 +245,47 @@ sys.stdout = original_stdout
           </div>
 
           {/* Dynamic Test Case Input UI */}
-          <div className="mt-4 space-y-4">
-            <h3 className="font-semibold">Test Cases</h3>
-            {testCases.map((testCase, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                {testCase.map((param, paramIndex) => (
-                  <div key={paramIndex} className="relative">
-                    <input
-                      className="w-24 p-2 border rounded-md text-sm pr-6"
-                      placeholder={`Param ${paramIndex + 1}`}
-                      value={param}
-                      onChange={(e) => handleTestCaseChange(index, paramIndex, e.target.value)}
-                    />
-                    {paramIndex !== 0 && <button
-                      onClick={() => removeParameter(index, paramIndex)}
-                      className="absolute right-2 top-[50%] translate-y-[-50%] text-red-400 text-xs font-bold"
-                    >
-                      ✕
-                    </button>}
-                  </div>
-                ))}
-                <Button onClick={() => addParameter(index)} className="px-2 py-1 text-xs">+ Param</Button>
-                {testCases.length > 1 && <button onClick={() => removeTestCase(index)} className="cursor-pointer text-gray-500">
-                  <Trash className="h-5 w-5" />
-                </button>}
-              </div>
-            ))}
-            <Button onClick={addTestCase} className="px-2 py-1 text-xs bg-blue-500 text-white">+ Add Test Case</Button>
+            <div className="mt-4 space-y-4 max-h-[240px] overflow-y-scroll">
+              <h3 className="font-semibold">Test Cases</h3>
+              {testCases.map((testCase, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  {testCase.map((param, paramIndex) => (
+                    <div key={paramIndex} className="relative">
+                      <input
+                        className="w-24 p-2 border rounded-md text-sm pr-6"
+                        placeholder={`Param ${paramIndex + 1}`}
+                        value={param}
+                        onChange={(e) => handleTestCaseChange(index, paramIndex, e.target.value)}
+                      />
+                      {paramIndex !== 0 && <button
+                        onClick={() => removeParameter(index, paramIndex)}
+                        className="absolute right-2 top-[50%] translate-y-[-50%] text-red-400 text-xs font-bold"
+                      >
+                        ✕
+                      </button>}
+                    </div>
+                  ))}
+                  <Button onClick={() => addParameter(index)} className="px-2 py-1 text-xs">+ Param</Button>
+                  {testCases.length > 1 && <button onClick={() => removeTestCase(index)} className="cursor-pointer text-gray-500">
+                    <Trash className="h-5 w-5" />
+                  </button>}
+                </div>
+              ))}
+              <Button onClick={addTestCase} className="px-2 py-1 text-xs bg-blue-500 text-white">+ Add Test Case</Button>
+            </div>
           </div>
-        </div>
 
-        <div className="overflow-y-auto space-y-4">
-          <div>
+          <div className="overflow-y-auto space-y-4">
             <h3 className="font-semibold mb-2">Output</h3>
             <pre className="bg-gray-100 p-4 rounded-lg text-sm font-mono h-48 overflow-y-auto">
               {output || 'Run your code to see the output...'}
             </pre>
           </div>
         </div>
-      </div>
 
+        <Button type="submit" onClick={submitHandler}>
+        {isSubmitting ? <div className="w-full h-full flex justify-center items-center"><Loader className="text-white" /></div> : 'Submit'}
+        </Button>
           </> : <DialogHeader>
           <DialogTitle className="w-full h-full flex justify-center items-center"><Loader /></DialogTitle>
       </DialogHeader>
