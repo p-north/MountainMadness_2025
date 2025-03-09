@@ -11,7 +11,8 @@ import { BehaviorQuiz } from './behavior-modal';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { useScore } from '@/util/score-context';
-import { redirect } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { Loader } from './ui/loader';
 
 
 
@@ -25,6 +26,7 @@ function Grid({
   mode: string;
   callback: Function;
 }) {
+  const navigate = useNavigate();
   const {score, setScore} = useScore(); 
   
   let rows = 0;
@@ -50,6 +52,7 @@ function Grid({
   });
   const [currentQuestion, setCurrentQuestion] = useState<any>(null);
   const [name, setName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const totalCells = rows * cols;
@@ -132,7 +135,9 @@ function Grid({
 
   const submitHandler = (e: any) => {
     e.preventDefault();
+
     if(name === ""){
+      alert('Enter your name');
       return;
     }
 
@@ -152,14 +157,14 @@ function Grid({
       .then(data => console.log(data))
       .catch(error => console.error("Error:", error));
 
-      redirect('/');
+      navigate('/');
       return;
     }
 
     else {
        //Send name to behavior leader board
 
-       fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/${mode === 'behavior' ? 'behaviour' : 'leetcode'}'`, {
+       fetch(`${import.meta.env.VITE_SERVER_URL}/leaderboard/${mode === 'behavior' ? 'behaviour' : 'leetcode'}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -173,7 +178,7 @@ function Grid({
       .then(data => console.log(data))
       .catch(error => console.error("Error:", error));
         
-      redirect('/');
+      navigate('/');
       return;
     }
   }
@@ -273,7 +278,12 @@ function Grid({
               <Input placeholder='Enter your name' value={name} onChange={(e) => {
                 setName(e.target.value);
               }} />
-              <Button className="w-full" type="submit">Submit</Button>
+              <Button className="w-full" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? <div className='w-full h-full flex justify-center items-center'><Loader /></div> : 'Submit'}
+              </Button>
+              <Link to="/">
+                <Button className="w-full" variant="ghost" type="button">Close without ranking registration</Button>
+              </Link>
             </form>
           </DialogContent>
         </Dialog>
