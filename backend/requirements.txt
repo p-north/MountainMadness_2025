@@ -5,4 +5,5 @@ pydantic
 mysql-connector-python
 openai
 elevenlabs
+boto3
 

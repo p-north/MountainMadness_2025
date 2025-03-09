@@ -1,7 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from database import get_db_connection
 from models import Leaderboard, Audio
 from typing import List
+from ai_insults import gennerateAndUploadAudio
+from S3_upload import get_S3_Url
 
 
 app = FastAPI()
@@ -38,6 +40,21 @@ def startup():
 def root():
     return {"message": "Hello World"}
 
+@app.post("/upload-audio")
+async def upload_audio():
+    fileUrl = await gennerateAndUploadAudio()
+    return {"message": "File generated successfully", "file_url": fileUrl, "status":201}
+    
+    
+
+# Upload to S3, then retrieve from S3
+@app.get("/get-audio")
+async def getAudio(fileName: str = Body(...)):
+    fileUrl = get_S3_Url(fileName)
+    return {"message": "File generated successfully", "file_url": fileUrl, "status":200}
+    
+    
+    
+    
+
 # CMD: uvicorn main:app --host 0.0.0.0 --port 5000 --reload
-
-
